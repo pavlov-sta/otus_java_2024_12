@@ -1,6 +1,6 @@
 package ru.otus;
 
-public class TestClass {
+public class SecondTestClass {
 
     @Before
     public void init() {
