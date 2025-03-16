@@ -7,8 +7,6 @@ include("L08-gc:homework")
 include("L10-Loader")
 include("L12-solid")
 
-include("L14-behavioralPatterns")
-include("L15-structuralPatterns:demo")
 include("L15-structuralPatterns:homework")
 
 pluginManagement {
