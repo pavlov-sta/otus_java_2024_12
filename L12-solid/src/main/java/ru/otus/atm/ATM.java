@@ -1,5 +1,6 @@
 package ru.otus.atm;
 
+import java.util.Map;
 import ru.otus.model.Banknote;
 
 public interface ATM {
@@ -8,5 +9,5 @@ public interface ATM {
 
     int getBalance();
 
-    boolean withdrawal(int amount);
+    Map<Banknote, Integer> withdrawal(int amount);
 }

@@ -20,4 +20,12 @@ public class CassetteImpl implements Cassette {
     public int getCount() {
         return count;
     }
+
+    @Override
+    public void removeBanknotes(int count) {
+        if (this.count < count) {
+            throw new IllegalStateException("Not enough banknotes in the cassette.");
+        }
+        this.count -= count;
+    }
 }

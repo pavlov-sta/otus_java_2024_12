@@ -1,6 +1,9 @@
 package ru.otus.atm;
 
+import java.util.Map;
+import ru.otus.model.Banknote;
+
 public interface WithdrawalStrategy {
 
-    boolean withdrawal(int amount, BanknoteStorage storage);
+    Map<Banknote, Integer> withdrawal(int amount, BanknoteStorage banknoteStorage);
 }

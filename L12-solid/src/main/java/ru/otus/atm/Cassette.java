@@ -7,4 +7,6 @@ public interface Cassette {
     int getBalance(int value);
 
     int getCount();
+
+    void removeBanknotes(int count);
 }
