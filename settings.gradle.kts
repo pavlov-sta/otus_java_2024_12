@@ -4,6 +4,7 @@ include("L03-generics")
 include("L06-annotations")
 
 include("L08-gc:homework")
+include("L10-Loader")
 include("L12-solid")
 
 pluginManagement {
