@@ -2,15 +2,10 @@ package ru.otus.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.listener.Listener;
 import ru.otus.model.Message;
@@ -19,7 +14,6 @@ import ru.otus.processor.Processor;
 class ComplexProcessorTest {
 
     @Test
-    @DisplayName("Тестируем вызовы процессоров")
     void handleProcessorsTest() {
         // given
         var message = new Message.Builder(1L).field7("field7").build();
@@ -44,7 +38,6 @@ class ComplexProcessorTest {
     }
 
     @Test
-    @DisplayName("Тестируем обработку исключения")
     void handleExceptionTest() {
         // given
         var message = new Message.Builder(1L).field8("field8").build();
@@ -70,7 +63,6 @@ class ComplexProcessorTest {
     }
 
     @Test
-    @DisplayName("Тестируем уведомления")
     void notifyTest() {
         // given
         var message = new Message.Builder(1L).field9("field9").build();
