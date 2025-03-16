@@ -9,6 +9,8 @@ include("L12-solid")
 
 include("L15-structuralPatterns:homework")
 
+include("L16-io:homework")
+
 pluginManagement {
     val jgitver: String by settings
     val dependencyManagement: String by settings
