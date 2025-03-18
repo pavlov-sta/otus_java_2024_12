@@ -24,7 +24,7 @@ public class FileSerializer implements Serializer {
             mapper.writeValue(new File(fileName), data);
         } catch (IOException e) {
             logger.error("Error reading JSON from file: {}", fileName, e);
-            throw new RuntimeException("Error writing JSON to file: " + fileName, e);
+            throw new FileProcessException("Error writing JSON to file: " + fileName);
         }
     }
 }
