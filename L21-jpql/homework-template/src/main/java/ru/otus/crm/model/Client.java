@@ -1,16 +1,23 @@
 package ru.otus.crm.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -28,6 +35,13 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "address_id")
+    private Address address;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Phone> phones;
+
     public Client(String name) {
         this.id = null;
         this.name = name;
@@ -39,17 +53,45 @@ public class Client implements Cloneable {
     }
 
     public <E> Client(Long id, String name, Address address, List<Phone> phones) {
-        throw new UnsupportedOperationException();
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.phones = phones;
+
+        if (phones != null) {
+            for (Phone phone : phones) {
+                phone.setClient(this);
+            }
+        }
     }
 
     @Override
     @SuppressWarnings({"java:S2975", "java:S1182"})
     public Client clone() {
-        return new Client(this.id, this.name);
+        Client clonedClient = new Client(this.id, this.name);
+        if (this.address != null) {
+            Address clonedAddress = new Address(this.address.getId(), this.address.getStreet());
+            clonedClient.setAddress(clonedAddress);
+        }
+        if (this.phones != null) {
+            clonedClient.setPhones(this.phones.stream()
+                    .map(phone -> {
+                        Phone clonedPhone = new Phone(phone.getId(), phone.getNumber());
+                        clonedPhone.setClient(clonedClient);
+                        return clonedPhone;
+                    })
+                    .collect(Collectors.toList()));
+        }
+        return clonedClient;
     }
 
     @Override
     public String toString() {
-        return "Client{" + "id=" + id + ", name='" + name + '\'' + '}';
+        return "Client{" + "id="
+                + id + ", name='"
+                + name + '\'' + ", address="
+                + (address != null ? address.getStreet() : "null") + ", phones="
+                + (phones != null ? phones.stream().map(Phone::getNumber).collect(Collectors.joining(", ")) : "null")
+                + '}';
     }
 }
