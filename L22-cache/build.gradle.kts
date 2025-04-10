@@ -12,8 +12,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.assertj:assertj-core")
+    testImplementation("org.mockito:mockito-junit-jupiter")
 
     testImplementation("org.testcontainers:postgresql")
-
-    testImplementation("io.github.hakky54:logcaptor")
 }

@@ -19,6 +19,7 @@ import ru.otus.hiber.crm.model.Phone;
 import ru.otus.hiber.crm.service.DBServiceClient;
 import ru.otus.hiber.crm.service.DbServiceClientImpl;
 
+import static org.mockito.Mockito.spy;
 import static ru.otus.hiber.core.repository.HibernateUtils.HIBERNATE_CFG_FILE;
 
 public abstract class AbstractHibernateTest {
@@ -26,7 +27,7 @@ public abstract class AbstractHibernateTest {
     protected TransactionManagerHibernate transactionManager;
     protected DataTemplateHibernate<Client> clientTemplate;
     protected DBServiceClient dbServiceClient;
-    protected HwCache<Long, Client> cache;
+    protected HwCache<String, Client> cache;
 
     private static TestContainersConfig.CustomPostgreSQLContainer CONTAINER;
 
@@ -57,7 +58,7 @@ public abstract class AbstractHibernateTest {
 
         sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Address.class, Phone.class);
 
-        transactionManager = new TransactionManagerHibernate(sessionFactory);
+        transactionManager = spy(new TransactionManagerHibernate(sessionFactory));
         clientTemplate = new DataTemplateHibernate<>(Client.class);
         cache = new MyCache<>();
         dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);

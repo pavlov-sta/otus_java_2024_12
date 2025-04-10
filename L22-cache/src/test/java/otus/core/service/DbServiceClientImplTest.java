@@ -1,16 +1,18 @@
 package otus.core.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import otus.base.AbstractHibernateTest;
 import ru.otus.hiber.crm.model.Address;
 import ru.otus.hiber.crm.model.Client;
 import ru.otus.hiber.crm.model.Phone;
-import ru.otus.hiber.crm.service.DbServiceClientImpl;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("java:S125")
 class DbServiceClientImplTest extends AbstractHibernateTest {
@@ -18,7 +20,6 @@ class DbServiceClientImplTest extends AbstractHibernateTest {
     @Test
     @DisplayName("должен сохранить и найти клиента, используя кэш")
     void shouldSaveAndFindClientUsingCache() {
-        LogCaptor logCaptor = LogCaptor.forClass(DbServiceClientImpl.class);
 
         var client = new Client(
                 null,
@@ -29,22 +30,18 @@ class DbServiceClientImplTest extends AbstractHibernateTest {
         var savedClient = dbServiceClient.saveClient(client);
         assertThat(savedClient).isNotNull();
 
+        Client cachedClient = dbServiceClient
+                .getClient(savedClient.getId())
+                .orElseThrow(() -> new RuntimeException("Unexpected error"));
+        assertThat(cachedClient).isNotNull().usingRecursiveComparison().isEqualTo(savedClient);
+
         var loadedSavedClient = dbServiceClient.getClient(savedClient.getId());
         assertThat(loadedSavedClient)
                 .isPresent()
                 .get()
                 .usingRecursiveComparison()
                 .isEqualTo(savedClient);
-
-        List<String> logs = logCaptor.getLogs();
-        assertThat(logs)
-                .isNotEmpty()
-                .anyMatch(log -> log.contains("notify: key=" + savedClient.getId())
-                        && log.contains("value=" + savedClient)
-                        && log.contains("action=get"))
-                .anyMatch(log -> log.contains("notify: key=" + savedClient.getId())
-                        && log.contains("value=" + savedClient)
-                        && log.contains("action=put"));
+        verify(transactionManager, never()).doInReadOnlyTransaction(any());
     }
 
     @Test
