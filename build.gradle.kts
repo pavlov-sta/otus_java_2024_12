@@ -1,7 +1,7 @@
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import name.remal.gradle_plugins.sonarlint.SonarLintExtension
-import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
+import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 
 plugins {
     idea
@@ -37,6 +37,8 @@ allprojects {
     val jmh: String by project
     val asm: String by project
     val glassfishJson: String by project
+    val flyway: String by project
+
 
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
@@ -51,6 +53,7 @@ allprojects {
             dependency("org.openjdk.jmh:jmh-generator-annprocess:$jmh")
             dependency("org.glassfish:jakarta.json:$glassfishJson")
             dependency("org.ow2.asm:asm-commons:$asm")
+            dependency("org.flywaydb:flyway-core:$flyway")
         }
     }
 
