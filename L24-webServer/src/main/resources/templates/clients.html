@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Пользователи</title>
+</head>
+
+<body>
+
+<br>
+<a href="createClientForm">Создать нового пользователя</a>
+<br>
+<h4>Список пользователей</h4>
+<table style="width: 400px">
+    <thead>
+        <tr>
+            <td style="width: 50px">Id</td>
+            <td style="width: 150px">Имя</td>
+            <td style="width: 100px">Логин</td>
+            <td style="width: 100px">Пароль</td>
+            <td style="width: 100px">Роль</td>
+        </tr>
+    </thead>
+    <tbody>
+    <#list clients as client>
+        <tr>
+            <td>${client.id!}</td>
+            <td>${client.name!}</td>
+            <td>${client.login!}</td>
+            <td>${client.password!}</td>
+            <td>${client.roleClient!}</td>
+        </tr>
+    </#list>
+    </tbody>
+</table>
+</body>
+</html>
