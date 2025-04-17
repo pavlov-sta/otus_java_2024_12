@@ -102,8 +102,7 @@ subprojects {
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing"))
-
+        options.compilerArgs.addAll(listOf("-parameters", "-Xlint:all,-serial,-processing"))
         dependsOn("spotlessApply")
     }
     apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
