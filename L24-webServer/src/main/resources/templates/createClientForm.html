@@ -1,0 +1,36 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Создать нового пользователя</title>
+    <style>
+        .form-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h4>Создать нового пользователя</h4>
+<form action="createClient" method="post">
+    <div class="form-group">
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="login">Логин:</label>
+        <input type="text" id="login" name="login" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div class="form-group">
+        <label for="roleClient">Роль:</label>
+        <select id="roleClient" name="roleClient" required>
+            <#list roles as roleClient>
+            <option value="${roleClient}">${roleClient}</option>
+        </#list>
+        </select>
+    </div>
+    <button type="submit">Создать</button>
+</form>
+</body>
+</html>
