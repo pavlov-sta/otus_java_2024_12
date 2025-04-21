@@ -46,16 +46,17 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     }
 
     private void createComponent(Object configInstance, Method method) throws Exception {
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        Object[] parameters =
-                Arrays.stream(parameterTypes).map(this::getAppComponent).toArray();
-
-        Object componentInstance = method.invoke(configInstance, parameters);
         String componentName = method.getAnnotation(AppComponent.class).name();
 
         if (appComponentsByName.containsKey(componentName)) {
             throw new IllegalArgumentException("Duplicate component name: " + componentName);
         }
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Object[] parameters =
+                Arrays.stream(parameterTypes).map(this::getAppComponent).toArray();
+
+        Object componentInstance = method.invoke(configInstance, parameters);
 
         appComponents.add(componentInstance);
         appComponentsByName.put(componentName, componentInstance);
@@ -74,8 +75,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 .map(componentClass::cast)
                 .toList();
 
-        if (components.size() != 1) {
-            throw new NoSuchElementException("Expected exactly one component " + componentClass.getName());
+        if (components.isEmpty()) {
+            throw new NoSuchElementException("No component found for " + componentClass.getName());
+        } else if (components.size() > 1) {
+            throw new IllegalStateException("Expected exactly one component, but found " + components.size() + " for "
+                    + componentClass.getName());
         }
 
         return components.get(0);
