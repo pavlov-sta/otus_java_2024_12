@@ -1,9 +1,15 @@
 package ru.otus.appcontainer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 
@@ -19,7 +25,41 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private void processConfig(Class<?> configClass) {
         checkConfigClass(configClass);
-        // You code here...
+
+        Method[] methods = configClass.getMethods();
+        List<Method> appComponentMethods = Arrays.stream(methods)
+                .filter(method -> method.isAnnotationPresent(AppComponent.class))
+                .sorted(Comparator.comparing(
+                        method -> method.getAnnotation(AppComponent.class).order()))
+                .toList();
+
+        try {
+            Object appComponentInstance = configClass.getDeclaredConstructor().newInstance();
+
+            for (Method method : appComponentMethods) {
+                createComponent(appComponentInstance, method);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to process config class", e);
+        }
+    }
+
+    private void createComponent(Object configInstance, Method method) throws Exception {
+        String componentName = method.getAnnotation(AppComponent.class).name();
+
+        if (appComponentsByName.containsKey(componentName)) {
+            throw new IllegalArgumentException("Duplicate component name: " + componentName);
+        }
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Object[] parameters =
+                Arrays.stream(parameterTypes).map(this::getAppComponent).toArray();
+
+        Object componentInstance = method.invoke(configInstance, parameters);
+
+        appComponents.add(componentInstance);
+        appComponentsByName.put(componentName, componentInstance);
     }
 
     private void checkConfigClass(Class<?> configClass) {
@@ -30,11 +70,24 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
-        return null;
+        List<C> components = appComponents.stream()
+                .filter(componentClass::isInstance)
+                .map(componentClass::cast)
+                .toList();
+
+        if (components.isEmpty()) {
+            throw new NoSuchElementException("No component found for " + componentClass.getName());
+        } else if (components.size() > 1) {
+            throw new IllegalStateException("Expected exactly one component, but found " + components.size() + " for "
+                    + componentClass.getName());
+        }
+
+        return components.get(0);
     }
 
     @Override
     public <C> C getAppComponent(String componentName) {
-        return null;
+        return Optional.ofNullable((C) appComponentsByName.get(componentName))
+                .orElseThrow(() -> new NoSuchElementException("Component not found: " + componentName));
     }
 }
